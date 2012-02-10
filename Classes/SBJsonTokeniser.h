@@ -59,6 +59,7 @@ typedef enum {
 
 @property (strong) SBJsonUTF8Stream *stream;
 @property (copy) NSString *error;
+@property (readonly) NSUInteger previousIndexLocation;
 
 - (void)appendData:(NSData*)data_;
 

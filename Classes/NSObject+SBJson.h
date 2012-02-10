@@ -61,6 +61,7 @@
  @see @ref json2objc
  */
 - (id)JSONValue;
+- (id)JSONValue:(void(^)(NSError *error, NSUInteger offset))parseError;
 
 @end
 
@@ -75,5 +76,6 @@
  @see @ref json2objc
  */
 - (id)JSONValue;
+- (id)JSONValue:(void(^)(NSError *error, NSUInteger offset))parseError;
 
 @end

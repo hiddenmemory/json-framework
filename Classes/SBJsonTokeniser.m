@@ -40,6 +40,7 @@
 
 @synthesize error = _error;
 @synthesize stream = _stream;
+@synthesize previousIndexLocation = _previousIndexLocation;
 
 - (id)init {
     self = [super init];
@@ -372,7 +373,7 @@
     if (![_stream getUnichar:&ch])
         return sbjson_token_eof;
 
-    NSUInteger oldIndexLocation = _stream.index;
+    _previousIndexLocation = _stream.index;
     sbjson_token_t tok;
 
     switch (ch) {
@@ -443,7 +444,7 @@
         // We don't know how to restart in mid-flight, so
         // rewind to the start of the token for next attempt.
         // Hopefully we'll have more data then.
-        _stream.index = oldIndexLocation;
+        _stream.index = _previousIndexLocation;
     }
 
     return tok;

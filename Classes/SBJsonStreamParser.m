@@ -33,6 +33,8 @@
 #import "SBJsonStreamParser.h"
 #import "SBJsonTokeniser.h"
 #import "SBJsonStreamParserState.h"
+#import "SBJsonUTF8Stream.h"
+
 #import <limits.h>
 
 @implementation SBJsonStreamParser
@@ -163,7 +165,7 @@
     self.state = [SBJsonStreamParserStateError sharedInstance];
 }
 
-- (SBJsonStreamParserStatus)parse:(NSData *)data_ {
+- (SBJsonStreamParserStatus)parse:(NSData *)data_ parseError:(void(^)(NSError*,NSUInteger))parseError {
     @autoreleasepool {
         [tokeniser appendData:data_];
         
@@ -182,6 +184,12 @@
                 case sbjson_token_error:
                     self.state = [SBJsonStreamParserStateError sharedInstance];
                     self.error = tokeniser.error;
+					
+					if( parseError ) {
+						parseError([NSError errorWithDomain:@"" code:0 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self.error, @"message", nil]], 
+								   tokeniser.previousIndexLocation);
+					}
+					
                     return SBJsonStreamParserError;
                     break;
                     
@@ -189,6 +197,12 @@
                     
                     if (![state parser:self shouldAcceptToken:tok]) {
                         [self handleTokenNotExpectedHere: tok];
+						
+						if( parseError ) {
+							parseError([NSError errorWithDomain:@"" code:0 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:self.error, @"message", nil]], 
+									   tokeniser.previousIndexLocation);
+						}
+						
                         return SBJsonStreamParserError;
                     }
                     

@@ -61,6 +61,7 @@
  */
 @property(copy) NSString *error;
 
+
 /**
  @brief Return the object represented by the given NSData object.
 
@@ -70,16 +71,18 @@
  @return The NSArray or NSDictionary represented by the object, or nil if an error occured.
 
  */
-- (id)objectWithData:(NSData*)data;
+- (id)objectWithData:(NSData*)data 
+		  parseError:(void(^)(NSError *error, NSUInteger offset))block;
 
 /**
  @brief Return the object represented by the given string
-
+ 
  This method converts its input to an NSData object containing UTF8 and calls -objectWithData: with it.
-
+ 
  @return The NSArray or NSDictionary represented by the object, or nil if an error occured.
  */
-- (id)objectWithString:(NSString *)repr;
+- (id)objectWithString:(NSString *)repr 
+			parseError:(void(^)(NSError *error, NSUInteger offset))block;
 
 /**
  @brief Return the object represented by the given string

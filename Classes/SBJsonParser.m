@@ -32,10 +32,16 @@
 #import "SBJsonStreamParserAdapter.h"
 #import "SBJsonStreamParserAccumulator.h"
 
+@interface SBJsonParser () {
+}
+@property (copy) void (^parseError)( NSError *error, NSUInteger offset );
+@end
+
 @implementation SBJsonParser
 
 @synthesize maxDepth;
 @synthesize error;
+@synthesize parseError;
 
 - (id)init {
     self = [super init];
@@ -47,10 +53,17 @@
 
 #pragma mark Methods
 
-- (id)objectWithData:(NSData *)data {
+- (id)objectWithData:(NSData *)data parseError:(void (^)(NSError*,NSUInteger))block {
+	
+	self.parseError = block;
 
     if (!data) {
         self.error = @"Input was 'nil'";
+		
+		if( self.parseError ) {
+			self.parseError(nil, NSNotFound);
+		}
+		
         return nil;
     }
 
@@ -62,8 +75,8 @@
 	SBJsonStreamParser *parser = [[SBJsonStreamParser alloc] init];
 	parser.maxDepth = self.maxDepth;
 	parser.delegate = adapter;
-	
-	switch ([parser parse:data]) {
+
+	switch ([parser parse:data parseError:block]) {
 		case SBJsonStreamParserComplete:
             return accumulator.value;
 			break;
@@ -80,12 +93,12 @@
 	return nil;
 }
 
-- (id)objectWithString:(NSString *)repr {
-	return [self objectWithData:[repr dataUsingEncoding:NSUTF8StringEncoding]];
+- (id)objectWithString:(NSString *)repr parseError:(void (^)(NSError*,NSUInteger))block {
+	return [self objectWithData:[repr dataUsingEncoding:NSUTF8StringEncoding] parseError:block];
 }
 
 - (id)objectWithString:(NSString*)repr error:(NSError**)error_ {
-	id tmp = [self objectWithString:repr];
+	id tmp = [self objectWithString:repr error:nil];
     if (tmp)
         return tmp;
     
