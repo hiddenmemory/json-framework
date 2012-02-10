@@ -156,6 +156,6 @@ typedef enum {
  @li SBJsonStreamParserError if an error occured. (See the error property for details in this case.)
  
  */
-- (SBJsonStreamParserStatus)parse:(NSData*)data;
+- (SBJsonStreamParserStatus)parse:(NSData*)data parseError:(void(^)(NSError*,NSUInteger))parseError;
 
 @end

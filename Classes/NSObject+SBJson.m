@@ -48,8 +48,12 @@
 @implementation NSString (NSString_SBJsonParsing)
 
 - (id)JSONValue {
-    SBJsonParser *parser = [[SBJsonParser alloc] init];
-    id repr = [parser objectWithString:self];
+    return [self JSONValue:nil];
+}
+
+- (id)JSONValue:(void(^)(NSError *error,NSUInteger offset))parseError {
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+    id repr = [parser objectWithString:self parseError:parseError];
     if (!repr)
         NSLog(@"-JSONValue failed. Error is: %@", parser.error);
     return repr;
@@ -62,8 +66,12 @@
 @implementation NSData (NSData_SBJsonParsing)
 
 - (id)JSONValue {
+	return [self JSONValue:nil];
+}
+
+- (id)JSONValue:(void(^)(NSError *error,NSUInteger offset))parseError {
     SBJsonParser *parser = [[SBJsonParser alloc] init];
-    id repr = [parser objectWithData:self];
+    id repr = [parser objectWithData:self parseError:parseError];
     if (!repr)
         NSLog(@"-JSONValue failed. Error is: %@", parser.error);
     return repr;
