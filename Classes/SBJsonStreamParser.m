@@ -178,8 +178,7 @@
             sbjson_token_t tok = [tokeniser getToken:&token];
             switch (tok) {
                 case sbjson_token_eof:
-                    return [state parserShouldReturn:self];
-                    break;
+					return [state parserShouldReturn:self];
                     
                 case sbjson_token_error:
                     self.state = [SBJsonStreamParserStateError sharedInstance];
